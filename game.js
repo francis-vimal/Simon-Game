@@ -7,13 +7,8 @@ var userClickedPattern = [];
 var selectedElement;
 var level = 0;
 
-$(".btn").on("click", function () {
-    userClicked = $(this);
-    userClickedPattern.push(userClicked.attr('id'));
-    animatePress(userClicked.attr('id'));
-    playSound(userClicked.attr('id'));
-    console.log("userClickedPattern", userClickedPattern);
-    if(userClickedPattern.every((value, index) => value === gamePattern[index])) {
+function checkAnswer(index) {
+    if(userClickedPattern[index] === gamePattern[index]) {
         if(userClickedPattern.length === gamePattern.length) {
             nextSequence();
         }
@@ -23,15 +18,31 @@ $(".btn").on("click", function () {
         $("body").addClass("game-over");
         setTimeout(() => {
             $("body").removeClass("game-over");
-        }, 500);
+        }, 1000);
         $("#level-title").text("Game Over - Press any key to restart");
         level = 0;
         userClickedPattern = [];
         gamePattern = [];
+        $('.btn').off("click");
+        $("body").on("keypress", onKeypress);
     }
-});
+}
 
-$("body").keypress(nextSequence);
+$("body").keypress(onKeypress);
+
+function onKeypress() {
+    $(".btn").on("click", onButtonClick);
+    nextSequence();
+    $("body").off("keypress");
+}
+
+function onButtonClick() {
+    userClicked = $(this);
+    userClickedPattern.push(userClicked.attr('id'));
+    animatePress(userClicked.attr('id'));
+    playSound(userClicked.attr('id'));
+    checkAnswer(userClickedPattern.length - 1);
+}
 
 function nextSequence() {
     $("#level-title").text("Level " + (++level));
@@ -43,7 +54,6 @@ function nextSequence() {
         buttonEvent();
     }, 500);
     gamePattern.push(randomChosenColor);
-    console.log("gamePattern", gamePattern);
 }
 
 function buttonEvent() {
