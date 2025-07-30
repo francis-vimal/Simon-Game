@@ -1,4 +1,3 @@
-// alert("Im working")
 const buttonColors = ["red", "blue", "green", "yellow"];
 var randomChosenColor, randomNumber;
 var gamePattern = [];
@@ -24,16 +23,20 @@ function checkAnswer(index) {
         userClickedPattern = [];
         gamePattern = [];
         $('.btn').off("click");
-        $("body").on("keypress", onKeypress);
+        setTimeout(() => {
+            $("body").on("keypress", onStartPress);
+            $("body").on("click", onStartPress);
+        }, 1000);
     }
 }
 
-$("body").keypress(onKeypress);
-
-function onKeypress() {
+function onStartPress() {
     $(".btn").on("click", onButtonClick);
-    nextSequence();
     $("body").off("keypress");
+    $("body").off("click");
+    setTimeout(() => {
+        nextSequence();
+    }, 500);
 }
 
 function onButtonClick() {
@@ -72,3 +75,6 @@ function animatePress(currentColour) {
         userClicked.removeClass('pressed')
     }, 100);
 }
+
+$("body").keypress(onStartPress);
+$("body").click(onStartPress);
